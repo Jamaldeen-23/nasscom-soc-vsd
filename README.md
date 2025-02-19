@@ -4,7 +4,6 @@ Repository for the workshop "Digital VLSI SoC Design and Planning"
 Lab Day 1 : Inception of open-source EDA, OpenLANE and Sky130 PDK
 The objective is to perform the synthesis of the 'picorv32a' design and calculate the resulting flop ratio.
 
-The first 5 steps are the following:
 
   # Step 1: Change directory to the OpenLANE flow directory within the OpenLANE working directory
   $ cd Desktop/work/tools/openlane_working_dir/openlane
@@ -20,5 +19,5 @@ The first 5 steps are the following:
 
   # Step 5: Prepare the 'picorv32a' design for synthesis
   %prep -design picorv32a
-  
+
   
