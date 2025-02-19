@@ -21,4 +21,5 @@ The objective is to perform the synthesis of the 'picorv32a' design and calculat
   Step 5: Prepare the 'picorv32a' design for synthesis
   %prep -design picorv32a
 
-  
+  ![image](https://github.com/user-attachments/assets/0f97c4c5-c2f9-4dd9-8fd2-03afea07612d)
+
