@@ -490,6 +490,7 @@ In the OpenLANE flow we load the required packages and prepare the design:
 
 ![image](https://github.com/user-attachments/assets/2fd811ac-ff9e-438b-97b7-fb2841f431cd)
 
+![image](https://github.com/user-attachments/assets/28558a0a-e6df-446e-be72-b0b7cf323b3f)
 
 
 The synthesis is successfully performed, with a resulting chip area of 147712.9184. However, the slack condition is not being met with tns = -711.59 and wns = -23.89
@@ -527,8 +528,6 @@ To improve the timing situation we will change the 'SYNTH_SIZING' parameter from
   # Run synthesis
   %run_synthesis
 ```
-
-
 
 The new synthesis with the previous modifications allows to reduce the slack to 0 for both tns and wns, at the expense of a larger area: 1817300.544
 
@@ -641,7 +640,6 @@ The first of them is cell \_14510_ ('sky130_fd_sc_hd__or3_2') which is driving 4
 ```
 Similarly by repeating this procedure we can reduce the slack signifiacntly.
 
-
 ![image](https://github.com/user-attachments/assets/9c3a5998-2055-40ea-ada4-89ead6514d19)
 
 ![image](https://github.com/user-attachments/assets/f724168b-2fc2-4d22-91ad-8e388deb708c)
@@ -665,7 +663,6 @@ ls
 ```
 
 ![image](https://github.com/user-attachments/assets/4850ad08-653b-469b-9a65-4c3c84cf15bf)
-
 
 The copy has been created. Now we overwrite the netlist with the results of this section:
 
