@@ -32,7 +32,7 @@ At this point the synthesis can be started:
 ```
 ![image](https://github.com/user-attachments/assets/cf20a1a8-6018-4065-b7cd-0e1b3370d7d7)
 
-After successful completion of the synthesis we navigate to the reports folder of this specific run (25-01_23-16) and inspect the Yosys stats report file:
+After successful completion of the synthesis we navigate to the reports folder of this specific run (12-02_13-47) and inspect the Yosys stats report file:
 
 ![image](https://github.com/user-attachments/assets/25ecd7f7-6035-45e4-a4e2-d622d59d1649)
 
@@ -216,10 +216,7 @@ While in the cloned standard cell design folder, the following commands needs to
 
 Between the commands we check in another terminal that the file 'sky130_inv.ext' has been created:
 
-
 ![image](https://github.com/user-attachments/assets/e22406ce-df8f-4abb-b927-08000a18e56f)
-
-
 
 After the ext2spice command we check that the file 'sky130_inv.spice' has been created:
 ![image](https://github.com/user-attachments/assets/14aa55fb-eec3-4733-a392-69676cac3ad4)
@@ -372,8 +369,6 @@ The rule for spacing between poly.resistor and poly has been fixed but the rule 
 ![onlyndrc](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-02%20124914.png)
 
 This can be fixed by replacing '*.nsd' with 'alldiff' in the sky130A.tech file, loading it like in the previous step and re-running the DRC check:
-
-![correctalldiff](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-02%20130455.png)
 
 The DRC warning appears now at the bottom of the leftmost poly resistor.
 ![image](https://github.com/user-attachments/assets/7eb6a588-6e15-4f4d-88db-736ef707cf34)
@@ -587,17 +582,9 @@ The next step is to observe the placement with Magic:
 
 ![placementgood](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-02%20220500.png)
 
-Zooming in, we find instances of the customised inverter cell, 'sky130_vsdinv', confirming the successful integration of the design into the OpenLANE flow. The connexion of the cells can be better inspected running the 'expand' command in tkcon.
-
-![placementzoomin1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-02%20220934.png)
-![placementzoomin2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-02%20221454.png)
-
+Zooming in, we find instances of the customised inverter cell, 'sky130_vsdinv' which confirms our integration.
 
 #### 2 Timing analysis using ideal clocks with OpenSTA
-
-Since the slack has been reduced to 0 in the previous section, to illustrate the timing troubleshooting process with OpenSTA we will depart from the initial synthesis of the previous section (with SYNTH_SIZING = 0 and SYNTH_STRATEGY = 'AREA 0'), where tns = -711.59, wns = -23.89. The synthesis is re-run to return to the initial design:
-
-![backtobeginningsynth](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-03%20000334.png)
 
 The next step is to create two required files for the STA analysis: 'pre_sta.conf' in the openlane directory and 'my_base.sdc' in the design source folder.
 
@@ -657,63 +644,9 @@ The first of them is cell \_14510_ ('sky130_fd_sc_hd__or3_2') which is driving 4
   # Generate custom timing report
   %report_checks -fields {net cap slew input_pins} -digits 4
 ```
+Similarly by repeating this procedure we can reduce the slack signifiacntly.
 
 
-It will inspected and replaced with an OR gate of drive strength 4 using the following commands:
-
-```bash
-  # Reports all the connections to a net
-  %report_net -connections _11675_
-
-  # Replace cell
-  %replace_cell _14514_ sky130_fd_sc_hd__or3_4
-
-  # Generate custom timing report
-  %report_checks -fields {net cap slew input_pins} -digits 4
-```
-
-The slack further reduces to wns = -23.1405
-
-The following element is cell \_14481_ (OR gate of drive strength 2) which has the longest delay
-
-It will be inspected and replaced with an OR gate of drive strength 4 using the following commands:
-
-```bash
-  # Reports all the connections to a net
-  %report_net -connections _11643_
-
-  # Replace cell
-  %replace_cell _14481_ sky130_fd_sc_hd__or4_4
-
-  # Generate custom timing report
-  %report_checks -fields {net cap slew input_pins} -digits 4
-```
-
-The slack further reduces to wns = -23.1362
-
-There is one more OR gate of drive strength 2 with the largest delay: \_14506_
-
-It will be inspected and replaced with an OR gate of drive strength 4 using the following commands:
-
-```bash
-  # Reports all the connections to a net
-  %report_net -connections _11668_
-
-  # Replacecell
-  %replace_cell _14506_ sky130_fd_sc_hd__or4_4
-
-  # Generate custom timing report
-  %report_checks -fields {net cap slew input_pins} -digits 4
-```
-
-The resulting slack is -22.6173. The ECO process was started at an initial slack of -23.90, so 1.2827 ns of slack have been reduced.
-
-We run the following command to verify cell \_14506_ has been replaced by 'sky130_fd_sc_hd__or4_4'.
-
-```bash
-  # Generate custom timing report
-  %report_checks -from _29043_ -to _30440_ -through _14506_
-```
 ![image](https://github.com/user-attachments/assets/9c3a5998-2055-40ea-ada4-89ead6514d19)
 
 ![image](https://github.com/user-attachments/assets/f724168b-2fc2-4d22-91ad-8e388deb708c)
@@ -836,11 +769,7 @@ After performing the CTS, the next step is to perform a timing analysis with int
 %exit
 ```
 
-The command run and timing report generated can be observed below:
-
-![realclk1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20003617.png)
-![realclk2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20003708.png)
-![realclk3](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20003754.png)
+The command run and timing report generated should be observed.
 
 #### Effect of removing buffer cell from clock buffer list variable
 
@@ -922,14 +851,7 @@ We will see what happens when buffer 'sky130_fd_sc_hd__clkbuf1' is removed from 
 
 The execution of the commands and the generated timing report can be observed below:
 
-![openroad1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20013330.png)
-![openroad2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20013352.png)
-![openroad3](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20014226.png)
-![openroad4](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20014253.png)
-![openroad5](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20014318.png)
-![openroad6](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20014347.png)
-![openroad7](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20014402.png)
-![openroad8](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20015036.png)
+![image](https://github.com/user-attachments/assets/e482eca7-c775-4661-9e93-0e6c7a4d71e5)
 
 ## Lab Day 5: Final Steps for RTL2GDS using tritonRoute and openSTA
 
@@ -987,8 +909,8 @@ $./flow.tcl -interactive
 
 The PDN is generated and an additional check shows that the current (up to date) DEF file includes the PDN information.
 
-![pdn1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20140844.png)
-![pdn2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20140859.png)
+![image](https://github.com/user-attachments/assets/cf3ce296-96a2-4f14-8bbb-6705c0697605)
+
 
 It is possible to load the design with the PDN in Magic for inspection using the following commands from another terminal:
 
@@ -1000,9 +922,10 @@ It is possible to load the design with the PDN in Magic for inspection using the
   $ magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read 14-pdn.def &
 ```
 
-![pdnmagic1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20143224.png)
-![pdnmagic2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20143333.png)
-![pdnmagic3](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20143450.png)
+![image](https://github.com/user-attachments/assets/4239f650-aade-47e3-a320-d6eb29cab778)
+![image](https://github.com/user-attachments/assets/bf2cd2fa-2821-47a1-888c-be810438faa9)
+
+![image](https://github.com/user-attachments/assets/3f3f8e91-57c8-41df-91c0-a41a722fe689)
 
 #### 2 Detailed routing using TritonRoute
 
@@ -1012,10 +935,8 @@ We run the routing using TritonRoute with its default settings (among them, the 
   #Run routing
   %run_routing
 ```
+![image](https://github.com/user-attachments/assets/734ed5e2-f6d1-4f0b-8529-62ded126c540)
 
-![routing1](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20145351.png)
-![routing2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20145544.png)
-![routing3](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20145650.png)
 
 It is possible to load the routed design in Magic for inspection using the following commands from another terminal:
 
@@ -1026,16 +947,11 @@ It is possible to load the routed design in Magic for inspection using the follo
   # Command to load the routed def in magic tool
   $ magic -T /home/vsduser/Desktop/work/tools/openlane_working_dir/pdks/sky130A/libs.tech/magic/sky130A.tech lef read ../../tmp/merged.lef def read picorv32a.def &
 ```
-![routing1magic](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20151534.png)
-![routing2magic](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20151649.png)
-![routing3magic](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20151739.png)
-![routing4magic](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20151816.png)
+![image](https://github.com/user-attachments/assets/ee432dfa-946c-4263-8306-af659dcd3d7c)
+![image](https://github.com/user-attachments/assets/af4dda86-f5b9-4ca2-b619-511441661f30)
+
 
 The routing has achieved 0 violations.
-
-We inspect the fast route guide present in the 'openlane/designs/picorv32a/runs/02-02_19-54/tmp/routing' folder
-
-![fastguideroute](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20154001.png)
 
 #### 3 Parasitic extraction
 
@@ -1043,11 +959,13 @@ The extraction of RC parasitic values has been integrated in OpenLANE flow in th
 
 From the information lines during the routing execution we can see:
 
-![extraction](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20164435.png)
+![image](https://github.com/user-attachments/assets/86c7b03e-2a7d-47dc-84e6-94586dce754b)
+
 
 We also can see that the file 'picorv32a.spef' has been created in the 'openlane/designs/picorv32a/runs/02-02_19-54/result/routing' folder.
 
-![spefinfolder](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20165002.png)
+![image](https://github.com/user-attachments/assets/63450d93-795c-4802-b157-5a1278a86653)
+
 
 #### 4 Post-routing timing analysis using OpenSTA
 
@@ -1095,7 +1013,7 @@ We perform the post-routing timing analysis using OpenSTA. The commands are the 
 ```
 
 We can see below the execution of the command and the generated timing report:
+![image](https://github.com/user-attachments/assets/6e02da79-0fd0-477f-afdb-de67bdb52235)
+![image](https://github.com/user-attachments/assets/93616a6e-7ec8-4ab8-8ea3-7f41d5f5dc62)
+![image](https://github.com/user-attachments/assets/1f4b56bf-a1b1-4d1d-a0ad-a7b975d239a7)
 
-![postroutesta](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20172935.png)
-![postroutesta2](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20173024.png)
-![postroutesta3](https://github.com/ABM15/nasscom-vsd-soc-design-program/blob/main/Screenshot%202025-02-04%20173042.png)
