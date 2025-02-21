@@ -222,12 +222,7 @@ After the ext2spice command we check that the file 'sky130_inv.spice' has been c
 ![image](https://github.com/user-attachments/assets/14aa55fb-eec3-4733-a392-69676cac3ad4)
 
 
-#### 5 Adjustment of CMOS inverter SPICE file for simulation
-
-We inspect the initially created SPICE file:
-
-![image](https://github.com/user-attachments/assets/87e3ce6b-df86-4a45-8a39-3e88d27664b9)
-
+#### 5 Adjustment of CMOS inverter SPICE file for simulation:
 
 The initial file needs to be edited to perform the following changes:
 
